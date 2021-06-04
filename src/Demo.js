@@ -1,5 +1,7 @@
 import React from "react";
-import { Table } from 'antd';
+import { Table, Typography } from 'antd';
+
+const { Text } = Typography;
 
 function onChange(pagination, filters, sorter, extra) {
   console.log('params', pagination, filters, sorter, extra);
@@ -35,11 +37,39 @@ const p1=(data,x) =>{
 }
 
 function App(props) {
-  let {data,cols}=props
+  let {data,cols,totals}=props
+  const subtotalsofall=key=> data.map(x=>x[key]).reduce((sum,next) =>sum+next)
   if(data?.length>0)
   {
     let columns=cols.map(x=>p1(data,x))
-    return <Table columns={columns} dataSource={data} onChange={onChange} />;
+    return <Table 
+    columns={columns} 
+    dataSource={data} 
+    onChange={onChange}  
+    summary={data => {
+            let totalBorrow = 0;
+            let totalRepayment = 0;
+
+            // pageData.forEach(({ borrow, repayment }) => {
+            //   totalBorrow += borrow;
+            //   totalRepayment += repayment;
+            // });
+
+            return (
+              <>
+                <Table.Summary.Row>
+                  {cols.map(x=>
+                    <Table.Summary.Cell>
+                      <Text>{totals.some(y=>y===x)?subtotalsofall(x):null}</Text>
+                    </Table.Summary.Cell>
+                    
+                  )}
+                </Table.Summary.Row>
+              </>
+            );
+          }}
+
+    />;
   }
   else
   {
